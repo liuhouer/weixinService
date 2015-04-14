@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="WeiChatService"
+  id="myeclipse.1384242304249"
+  context-root="/WeiChatService"
+  j2ee-spec="5.0"
+  archive="WeiChatService.war">
+  <attributes>
+    <attribute name="webrootdir" value="WebRoot" />
+  </attributes>
+</project-module>
+

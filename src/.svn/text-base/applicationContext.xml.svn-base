@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	<!--load jdbc.properties -->
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:resources.properties</value>
+			</list>
+		</property>
+	</bean>
+	<!-- use jndi dataSource
+		<bean id="dataSource"
+		class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName">
+		<value>java:comp/env/jdbc/twf</value>
+		</property>
+		</bean> -->
+
+	<!-- use dbcp dataSource 
+		<bean id="dataSource"
+		class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName"
+		value="${jdbc.driverClassName}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		</bean> -->
+
+	<bean id="dataSource"
+		class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass">
+			<value>${jdbc.driverClassName}</value>
+		</property>
+		<property name="jdbcUrl">
+			<value>${jdbc.url}</value>
+		</property>
+		<property name="user">
+			<value>${jdbc.username}</value>
+		</property>
+		<property name="password">
+			<value>${jdbc.password}</value>
+		</property>
+		<property name="minPoolSize">
+			<value>3</value>
+		</property>
+		<property name="initialPoolSize">
+			<value>5</value>
+		</property>
+		<property name="maxPoolSize">
+			<value>10</value>
+		</property>
+		<property name="acquireIncrement">
+			<value>1</value>
+		</property>
+		<property name="maxIdleTime">
+			<value>1800</value>
+		</property>
+	</bean>
+
+	<!-- init ibatis framework -->
+	<bean id="sqlMapClient"
+		class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+		<property name="configLocation">
+			<value>classpath:sqlMap-config.xml</value>
+		</property>
+	</bean>
+	<!-- register transaction manager -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource">
+			<ref local="dataSource" />
+		</property>
+	</bean>
+
+	<!-- Service实现类-->
+	<bean id="bankService"
+		class="tw.bank.service.impl.LiaoNingCCBServiceImpl">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="sqlMapClient" ref="sqlMapClient"></property>
+		<property name="bankIp" value="127.0.0.1"></property>
+		<property name="bankPort" value="9001"></property>
+		<property name="dayMaxMoney" value="2000"></property>
+		<property name="filePath" value="c:/"></property>
+		<property name="smsMsgMap">
+			<map>
+				<entry key="SYS_OK_1001" value="您的签约操作成功，感谢您的使用！"/>
+				<entry key="SYS_OK_1002" value="您的解约操作成功，感谢您的使用！"/>
+				<entry key="SYS_ERROR_0000" value="您的操作失败，系统正在维护中，请稍后再试！"/>
+				<entry key="SYS_ERROR_1001" value="本次操作失败，可能您的帐户未签约或已撤销，感谢您的使用！"/>
+				<entry key="SYS_ERROR_1002" value="本次操作失败，可能您的银行卡号错误，请您核对银行卡号再次尝试！"/>
+				<entry key="SYS_ERROR_2001" value="尊敬的用户您好，您的本次转账操作失败，请稍后再试！"/>
+			</map>
+		</property>		
+	</bean>
+
+
+
+</beans>
